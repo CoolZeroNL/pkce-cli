@@ -9,14 +9,14 @@ var opn = require('opn');
 // Setup
 
 program
-  .option('-c, --client_id <client id>', 'OIDC Client ID', '')
-  .option('-o, --tenant_url <tenant url>', 'ex: https://<yourtenant>.ice.ibmcloud.com', '')
+  .option('-c, --client_id <okta client id>', 'OIDC Client ID', '')
+  .option('-o, --okta_org <okta org url>', 'ex: https://micah.oktapreview.com', '')
   .option('-s, --scopes <space separated list of scopes>', 'Space separated list of scopes', 'openid profile email')
   .option('-r, --redirect_uri <redirect uri>', 'redirect uri', 'http://localhost:8080/redirect')
   .parse(process.argv);
   
 if (
-  !program.client_id || !program.tenant_url || 
+  !program.client_id || !program.okta_org || 
   !program.scopes || !program.redirect_uri
 ) {
   program.help();
@@ -33,7 +33,7 @@ server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 server.listen(8080);
 
-server.get('/redirect', RedirectHandler);
+server.get('/redirect', oktaRedirectHandler);
 
 // execute auth code flow with pkce
 var codeVerifier = uuid();
@@ -47,12 +47,12 @@ console.log('About to call Authorize URL: ' + authorizeUrl + '\n');
 
 console.log('press any key to continue...');
 keypress().then(() => {
-  // Step 1: call authorize endpoint where user will authenticate to IBM Cloud Idenity
+  // Step 1: call authorize endpoint where user will authenticate to Okta
   opn(authorizeUrl);
 });
 
-// Step 2: IBM Cloud Identity redirects back to this app with an auth code
-async function RedirectHandler(req, res, next) {
+// Step 2: Okta redirects back to this app with an auth code
+async function oktaRedirectHandler(req, res, next) {
   var body = '<html><body><h4>OAuth2 authorize complete. ' + 
     'You can close this tab.</h4></body></html>';
   res.writeHead(200, {
@@ -89,10 +89,10 @@ async function RedirectHandler(req, res, next) {
   console.log('press any key to continue...');
   await keypress();
   
-  // Step 3: call token endpoint where IBM Cloud Identity will exchange code for tokens
+  // Step 3: call token endpoint where Okta will exchange code for tokens
   request.post(
     { 
-      url: program.tenant_url + '/oidc/endpoint/default/token', 
+      url: program.okta_org + '/oauth2/v1/token', 
       form: form 
     },
     function (err, httpResponse, body) {
@@ -115,7 +115,7 @@ async function tokenResponseHandler(tokenResponse) {
   
   // Step 4: use the access_token to hit the /userinfo endpoint
   request.get(
-    program.tenant_url + '/oidc/endpoint/default/userinfo', 
+    program.okta_org + '/oauth2/v1/userinfo', 
     { auth: { bearer: tokenResponse.access_token } }, 
     function (err, httpResponse, body) {
       console.log(JSON.parse(body));
@@ -140,7 +140,7 @@ function base64url(str){
 }
 
 function buildAuthorizeUrl(codeVerifier, codeChallenge) {
-	var authorizeUrl = program.tenant_url + '/oidc/endpoint/default/authorize?' +
+	var authorizeUrl = program.okta_org + '/oauth2/v1/authorize?' +
     'client_id=' + program.client_id + '&' +
     'response_type=code&' +
     'scope=' + program.scopes + '&' +
