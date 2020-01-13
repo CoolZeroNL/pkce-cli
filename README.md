@@ -1,6 +1,6 @@
-## PKCE Command Line (SPA example coming soon)
+## PKCE Command Line 
 
-This tool demonstrates the Authorization Code Flow with PKCE 
+This tool demonstrates the Authorization Code Flow with PKCE for IBM Cloud Identity
 
 It follows these steps:
 
@@ -30,8 +30,8 @@ It follows these steps:
 Usage: pkce-cli [options]
 
 Options:
-  -c, --client_id <okta client id>               OIDC Client ID (default: "")
-  -o, --okta_org <okta org url>                  ex: https://micah.oktapreview.com (default: "")
+  -c, --client_id <client id>                    OIDC Client ID (default: "")
+  -o, --tenant_url <tenant url>                  ex: https://<yourtenant>.ice.ibmcloud.com (default: "")
   -s, --scopes <space separated list of scopes>  Space separated list of scopes (default: "")
   -r, --redirect_uri <redirect uri>              redirect uri (default: "")
   -h, --help                                     output usage information
@@ -43,7 +43,7 @@ Options:
 npm install
 ./pkce-cli \
   --client_id 0oahdifc72URh7rUV0h7 \
-  --okta_org https://micah.oktapreview.com \
+  --okta_org https://<yourtenant>.ice.ibmcloud.com \
   --scopes "openid profile email" \
   --redirect_uri http://localhost:8080/redirect 
 ```
@@ -100,13 +100,24 @@ Calling /userinfo endpoint with access token
 
 Here's an overview of the Authorization Code with PKCE flow:
 
-![pkce](pkce.png)
-
-Note: This image was generated using [mermaid](https://mermaidjs.github.io/). The source is [here](pkce.mmd)
-
-You can edit and regenrate the image using this command:
-
+```mermaid
+sequenceDiagram
+    participant RO as Resource Owner
+    participant CA as Client App (vue.js)
+    participant AS as Authorization Server
+    RO->>CA: 1. Access App
+    note right of CA: create random (v)<br/>$ = sha256(v) 
+    CA->>RO: 2. Redirect with $
+    RO->>AS: 3. Redirect to Login with $
+    note right of AS: store $
+    AS->>RO: 4. Returns Login Form
+    RO->>AS: 5. Submits Credentials
+    note right of AS: authenticate user
+    AS->>RO: 6. Redirect with code (α)
+    RO->>CA: 7. Redirect to App with code (α)
+    CA->>AS: 8. Request Token
+    note over CA,AS: request includes:<br/>Client ID, (v), (α)
+    note right of AS: validate:<br/>- Client ID<br/>- sha256(v) = $<br/>- (α)
+    AS->>CA: 9. Return Token
 ```
-mmdc -i pkce.mmd -o pkce.png -b transparent -C mmdc.css
-mmdc -i pkce.mmd -o pkce.svg -C mmdc.css
-``` 
+
