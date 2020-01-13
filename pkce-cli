@@ -92,7 +92,7 @@ async function oktaRedirectHandler(req, res, next) {
   // Step 3: call token endpoint where Okta will exchange code for tokens
   request.post(
     { 
-      url: program.okta_org + '/oauth2/v1/token', 
+      url: program.okta_org + '/oidc/endpoint/default/token', 
       form: form 
     },
     function (err, httpResponse, body) {
@@ -115,7 +115,7 @@ async function tokenResponseHandler(tokenResponse) {
   
   // Step 4: use the access_token to hit the /userinfo endpoint
   request.get(
-    program.okta_org + '/oauth2/v1/userinfo', 
+    program.okta_org + '/oidc/endpoint/default/userinfo', 
     { auth: { bearer: tokenResponse.access_token } }, 
     function (err, httpResponse, body) {
       console.log(JSON.parse(body));
@@ -140,7 +140,7 @@ function base64url(str){
 }
 
 function buildAuthorizeUrl(codeVerifier, codeChallenge) {
-	var authorizeUrl = program.okta_org + '/oauth2/v1/authorize?' +
+	var authorizeUrl = program.okta_org + '/oidc/endpoint/default/authorize?' +
     'client_id=' + program.client_id + '&' +
     'response_type=code&' +
     'scope=' + program.scopes + '&' +
