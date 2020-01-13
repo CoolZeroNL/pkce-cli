@@ -7,7 +7,7 @@ It follows these steps:
 1. Creates a random string called the `code verifier`
 2. Hashes the `code verifier` creating a value called the `code challenge`
 3. Builds an authorization URL which includes:
-    a. Okta OIDC Client ID
+    a. OIDC Client ID
     b. a list of request scopes
     c. a redirect uri
     d. a randomly generated state value
@@ -23,6 +23,10 @@ It follows these steps:
     e. the `code verifier` from earlier
 7. Displays the tokens returned from the `token` endpoint
 8. Uses the returned access token to call the `userinfo` endpoint
+
+## Setup IBM Cloud Identity
+
+
 
 ## Usage
 
@@ -51,50 +55,65 @@ npm install
 You'll get output like this:
 
 ```
-Created Code Verifier (v): 0233_39e5_6b3d_70b6_087f_b675_cc62_b178_ce21_577f_d661
+Created Code Verifier (v): a877_bdfa_acb5_a371_dc5c_c973_eed3_bfae_f7a3_a50b_0346
 
-Created Code Challenge ($): Y3LBgtM-gcL_gEw-TGt26uOqNtnBO2nWXEwm_GC5Oh4
+Created Code Challenge ($): rDspf0_iRhJ0qbiRC8TqxFWqWUtzv7-sYPD95CfF244
 
-Calling Authorize URL: https://micah.oktapreview.com/oauth2/v1/authorize?client_id=0oahdifc72URh7rUV0h7&response_type=code&scope=openid profile email&redirect_uri=http://localhost:8080/redirect&state=f3a5_f3a7_051f_2f97_f147_272a_d074_86fb_7d08_8650_3d8b&code_challenge_method=S256&code_challenge=Y3LBgtM-gcL_gEw-TGt26uOqNtnBO2nWXEwm_GC5Oh4
+About to call Authorize URL: https://<yourtenant>.ice.ibmcloud.com/oidc/endpoint/default/authorize?client_id=4e0af8a0-10b7-4031-9405-3e23d981da78&response_type=code&scope=openid profile email&redirect_uri=https://localhost:8080/redirect&state=b641_48e8_9c91_6d7f_69ad_0836_0201_5466_9553_e67e_dc9a&code_challenge_method=S256&code_challenge=rDspf0_iRhJ0qbiRC8TqxFWqWUtzv7-sYPD95CfF244
 
-Got code (α): C3LZZVjIYkOsjh42XTpZ
+press any key to continue...
+
+Got code (α): 9SSxIje8SsirzAV1GdwTfJZtsIKHJi
+
+press any key to continue...
 
 Calling /token endpoint with:
-client_id: 0oahdifc72URh7rUV0h7
-code_verifier (v): 0233_39e5_6b3d_70b6_087f_b675_cc62_b178_ce21_577f_d661
-code (α): C3LZZVjIYkOsjh42XTpZ
+client_id: 4e0af8a0-10b7-4031-9405-3e23d981da78
+code_verifier (v): a877_bdfa_acb5_a371_dc5c_c973_eed3_bfae_f7a3_a50b_0346
+code (α): 9SSxIje8SsirzAV1GdwTfJZtsIKHJi
 
-Here is the form post that will be sent to the /token endpoint:
-{ grant_type: 'authorization_code',
-  redirect_uri: 'http://localhost:8080/redirect',
-  client_id: '0oahdifc72URh7rUV0h7',
-  code: 'C3LZZVjIYkOsjh42XTpZ',
-  code_verifier: '0233_39e5_6b3d_70b6_087f_b675_cc62_b178_ce21_577f_d661' }
+Here is the complete form post that will be sent to the /token endpoint:
+{
+  grant_type: 'authorization_code',
+  redirect_uri: 'https://localhost:8080/redirect',
+  client_id: '4e0af8a0-10b7-4031-9405-3e23d981da78',
+  code: '9SSxIje8SsirzAV1GdwTfJZtsIKHJi',
+  code_verifier: 'a877_bdfa_acb5_a371_dc5c_c973_eed3_bfae_f7a3_a50b_0346'
+}
+
+press any key to continue...
 
 Got token response:
-{ access_token:
-   'eyJraWQiOiItVV92MHBJVGx5X0V3MTJfTzZuT1lWb081ZVBucm1Iek9wbkxfS2FHN0lzIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULnloZ0k4WFRTVWhrQ0dRT28xSVQwSXVYd3pSc094Rm5HY2xDNmN2bkFEMlkiLCJpc3MiOiJodHRwczovL21pY2FoLm9rdGFwcmV2aWV3LmNvbSIsImF1ZCI6Imh0dHBzOi8vbWljYWgub2t0YXByZXZpZXcuY29tIiwic3ViIjoibWljYWhAYWZpdG5lcmQuY29tIiwiaWF0IjoxNTQyMzg5NjY2LCJleHAiOjE1NDIzOTMyNjYsImNpZCI6IjBvYWhkaWZjNzJVUmg3clVWMGg3IiwidWlkIjoiMDB1ZG8zYmFseE5od0tkU0wwaDciLCJzY3AiOlsicHJvZmlsZSIsIm9wZW5pZCIsImVtYWlsIl19.db85XwSTta0UpxySopx6A66kBWybJtxgYZSP0EGoiTFV1dHHhlGR563J3zaF94a6m8rSIM9g_O_HBskLYr7uaZVTIlVq0pgT9v8NQ2dvwl5f0br9dfYgBv-ftGaSUr5BGJYTgM3urvx0x7M5HME_Me3id7tFQydvvcgJFOn_2nY8f-usy1jT8aJtOuxcgYqWrOVJmJJVRnI6tB8T7LT1GmIR9pe9dxaJxubqYIkCO2UeUCpBoLJ3duTpSIAmOFyMH1gxdXLHD4xQaBm-AKfMvLPSvEi-pH1soCXGX1dQVuwgBAiF7sNJNb4WueXu92AcSzma3jtEh0ri5RCYxywAbA',
+{
+  access_token: 'w49efjWN8DcRXqSmpiljv3BizEiOVFXgqieO0I45',
+  scope: 'openid profile email',
+  grant_id: '02b1919e-7ca4-472c-9ada-acca7b4647b1',
+  id_token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InNlcnZlciJ9.eyJnaXZlbl9uYW1lIjoiSm9vcCIsInNfaGFzaCI6IjU2RXloQTBpQ1doTjlfWmtsa1VQNnciLCJ1bmlxdWVTZWN1cml0eU5hbWUiOiI2NDAwMDUzWVpKIiwicmVhbG1OYW1lIjoiY2xvdWRJZGVudGl0eVJlYWxtIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInByZWZlcnJlZF91c2VybmFtZSI6Impvb3BAcG9jLmljZS5pYm1jbG91ZC5jb20iLCJuYW1lIjoiSm9vcCBEZW1vIiwiZW1haWwiOiJqb29wQGxvY2FsLWV2ZW50cy5ubCIsImFjciI6InVybjppYm06c2VjdXJpdHk6cG9saWN5OmlkOjEiLCJ1c2VyVHlwZSI6InJlZ3VsYXIiLCJkaXNwbGF5TmFtZSI6Ikpvb3AgRGVtbyIsImZhbWlseV9uYW1lIjoiRGVtbyIsImF0X2hhc2giOiJFTmQyZlg2Y1FRYWVaREptd01abXFnIiwiZXh0Ijp7InRlbmFudElkIjoicG9jLmljZS5pYm1jbG91ZC5jb20ifSwiaXNzIjoiaHR0cHM6Ly9wb2MuaWNlLmlibWNsb3VkLmNvbS9vaWRjL2VuZHBvaW50L2RlZmF1bHQiLCJhdWQiOiI0ZTBhZjhhMC0xMGI3LTQwMzEtOTQwNS0zZTIzZDk4MWRhNzgiLCJzdWIiOiI2NDAwMDUzWVpKIiwiaWF0IjoxNTc4OTI2NzgwLCJleHAiOjE1Nzg5MzM5ODB9.gkBhtr5RY6BtVrl7qfimLPKDmCxvIHWykVeAUfx3zGUj-ytXC4-0GK36nChybS-aGzkrQj1ye6H-RzSoTK__8Y7pYVaxrbshfjxOvagNTLGJ_lfujKmd7SHG4lTCAcht7RTCyxvg56Lxwg3qDKZm2dTo43EaaYUmImUcYTL8wkVyw1IUTL0dTEtYNjl1wxSB5pMJAsCa203WLkDgLVB-hgQ4ZF3f6Ehx2lId15Pzw2l8ViGKP0QJctCbsergbV8T0xCIOzoIS2V7CNnQ98G41e1R_OMsfD5ZErLCZsY0rHbiKsIMKexH2rW9sXGt14MS-z4ItfMQrymqVbyr4bAtgg',
   token_type: 'Bearer',
-  expires_in: 3600,
-  scope: 'profile openid email',
-  id_token:
-   'eyJraWQiOiJUcGwtaVowcHhtQWpZb05ISlVSLUtjWkdCMGdUTWFUYkd1clQwd19GMXgwIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiIwMHVkbzNiYWx4Tmh3S2RTTDBoNyIsIm5hbWUiOiJNaWNhaCBTaWx2ZXJtYW4iLCJlbWFpbCI6Im1pY2FoQGFmaXRuZXJkLmNvbSIsInZlciI6MSwiaXNzIjoiaHR0cHM6Ly9taWNhaC5va3RhcHJldmlldy5jb20iLCJhdWQiOiIwb2FoZGlmYzcyVVJoN3JVVjBoNyIsImlhdCI6MTU0MjM4OTY2NiwiZXhwIjoxNTQyMzkzMjY2LCJqdGkiOiJJRC5fS09kSjZITnpzNkpESkZHUEk5dlpTOHNkMk1memdGUW55bEpoRFpxaW53IiwiYW1yIjpbInB3ZCJdLCJpZHAiOiIwMG85dmFza2sySnQyWEZWZzBoNyIsInByZWZlcnJlZF91c2VybmFtZSI6Im1pY2FoQGFmaXRuZXJkLmNvbSIsImF1dGhfdGltZSI6MTU0MjM4OTYxMSwiYXRfaGFzaCI6IkQ3eU93WldjbzRTbFhGXzJJNnJpN0EifQ.XL1yFsx5gHl4fvngvTwVJwncfCyb5YwClwFpGsrUKr0MFDWBZuNmPvfPOFDBVkHbYmqUi3bajSYij7buI0mxauTJ1ZeqKeepUwLuVyKq94qbyHFXgvSlGXBYSXHA4sfJswJVSdkaoCXenyXTJJbcPuzYq6wpGt9a8ri4dq1cQ70UnXdgMTfbCGW_9Q6Tzv1wZa-GEB5i6iAfktrETORjMyFsGIAFaRQY5wdmsIf6LT3uIjKU7y4mq-X6rTJyJlkjmGxZv1QP0kfKiTSsGqeWt-s1-XinEtfnkOlLALNNIAo2MfB8cT88ixPZvCSt7VAzD_eBs8n_HkMqLQot4bs_Tw' }
+  expires_in: 7199
+}
+
+press any key to continue...
 
 Calling /userinfo endpoint with access token
 
-{ sub: '00udo3balxNhwKdSL0h7',
-  name: 'Micah Silverman',
-  profile:
-   'https://www.facebook.com/app_scoped_user_id/10156159259014459/',
-  locale: 'en-US',
-  email: 'micah@afitnerd.com',
-  preferred_username: 'micah@afitnerd.com',
-  given_name: 'Micah',
-  family_name: 'Silverman',
-  zoneinfo: 'America/Los_Angeles',
-  updated_at: 1541796005,
-  email_verified: true }
+{
+  ext: { tenantId: '<yourtenant>.ice.ibmcloud.com' },
+  sub: '64000',
+  email_verified: true,
+  displayName: 'Joop',
+  realmName: 'cloudIdentityRealm',
+  uniqueSecurityName: '64000',
+  preferred_username: 'joop@<yourtenant>.ice.ibmcloud.com',
+  given_name: 'Joop',
+  acr: 'urn:ibm:security:policy:id:1',
+  name: 'Joop Demo',
+  userType: 'regular',
+  family_name: 'Demo',
+  email: 'joop@'
+}
 ```
+
 
 ## Diagrams
 

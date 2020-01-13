@@ -48,7 +48,8 @@ console.log('About to call Authorize URL: ' + authorizeUrl + '\n');
 console.log('press any key to continue...');
 keypress().then(() => {
   // Step 1: call authorize endpoint where user will authenticate to IBM CIC
-  opn(authorizeUrl);
+  // opn(authorizeUrl);
+  opn(authorizeUrl, {wait: false})
 });
 
 // Step 2: IBM CIC redirects back to this app with an auth code
