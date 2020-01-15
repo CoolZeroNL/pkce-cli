@@ -27,7 +27,6 @@ It follows these steps:
 ## Setup IBM Cloud Identity
 
 
-
 ## Usage
 
 ```
@@ -35,11 +34,20 @@ Usage: pkce-cli [options]
 
 Options:
   -c, --client_id <client id>                    OIDC Client ID (default: "")
-  -o, --tenant_url <tenant url>                  ex: https://<yourtenant>.ice.ibmcloud.com (default: "")
+  -o, --tenant_url <tenant url>                  ex: https://< yourtenant >.ice.ibmcloud.com (default: "")
   -s, --scopes <space separated list of scopes>  Space separated list of scopes (default: "")
   -r, --redirect_uri <redirect uri>              redirect uri (default: "")
   -h, --help                                     output usage information
 ```
+
+## OIDC Scope
+Cloud Identity supports the following scopes:  
+`profile`: This scope value requests access to the `name`, `family_name`, `given_name` and `preferred_username` claims.  
+`email`: This scope value requests access to the `email` and `email_verified` claims.  
+`phone`: This scope value requests access to the `phone_number` and `phone_number_verified` claims.  
+
+# Cloud Identity endpoint 
+https://< yourtenant >.ice.ibmcloud.com/oidc/endpoint/default/.well-known/openid-configuration
 
 ## Run
 
@@ -47,7 +55,7 @@ Options:
 npm install
 ./pkce-cli \
   --client_id 0oahdifc72URh7rUV0h7 \
-  --okta_org https://<yourtenant>.ice.ibmcloud.com \
+  --tenant_url https://<yourtenant>.ice.ibmcloud.com \
   --scopes "openid profile email" \
   --redirect_uri http://localhost:8080/redirect 
 ```
@@ -101,16 +109,16 @@ Calling /userinfo endpoint with access token
   ext: { tenantId: '<yourtenant>.ice.ibmcloud.com' },
   sub: '64000',
   email_verified: true,
-  displayName: 'Joop',
+  displayName: 'user',
   realmName: 'cloudIdentityRealm',
   uniqueSecurityName: '64000',
-  preferred_username: 'joop@<yourtenant>.ice.ibmcloud.com',
-  given_name: 'Joop',
+  preferred_username: 'user@<yourtenant>.ice.ibmcloud.com',
+  given_name: 'user',
   acr: 'urn:ibm:security:policy:id:1',
-  name: 'Joop Demo',
+  name: 'user Demo',
   userType: 'regular',
   family_name: 'Demo',
-  email: 'joop@'
+  email: 'user@<yourtenant>.ice.ibmcloud.com'
 }
 ```
 
